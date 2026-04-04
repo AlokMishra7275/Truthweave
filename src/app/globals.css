@@ -1,0 +1,93 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-slate-50 text-slate-800;
+    font-family: 'Inter', 'Arial', sans-serif;
+    line-height: 1.6;
+  }
+
+  /* Stealth Mode Styles - Looks like Online Dictionary */
+  body.stealth-mode {
+    background: #f8f9fa !important;
+    font-family: 'Times New Roman', serif !important;
+    color: #6b7280 !important;
+  }
+
+  body.stealth-mode h1,
+  body.stealth-mode h2,
+  body.stealth-mode h3,
+  body.stealth-mode h4 {
+    font-family: 'Times New Roman', serif !important;
+    color: #374151 !important;
+    font-weight: normal !important;
+  }
+
+  body.stealth-mode .bg-white {
+    background: #ffffff !important;
+    border: 1px solid #e5e7eb !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+  }
+
+  body.stealth-mode button {
+    background: #f3f4f6 !important;
+    color: #374151 !important;
+    border: 1px solid #d1d5db !important;
+    font-family: 'Times New Roman', serif !important;
+    border-radius: 4px !important;
+  }
+
+  body.stealth-mode button:hover {
+    background: #e5e7eb !important;
+  }
+
+  body.stealth-mode a {
+    color: #2563eb !important;
+    text-decoration: underline !important;
+  }
+
+  /* Hide all trauma-specific content in stealth mode */
+  body.stealth-mode .trauma-content {
+    display: none !important;
+  }
+
+  /* Trauma-informed design principles */
+  .safe-button {
+    @apply transition-all duration-200 ease-in-out;
+  }
+
+  .safe-button:hover {
+    @apply transform scale-105;
+  }
+
+  .memory-card {
+    @apply transition-all duration-300 ease-in-out;
+  }
+
+  .memory-card:hover {
+    @apply shadow-lg transform translate-y-[-2px];
+  }
+
+  /* Accessibility improvements */
+  .focus-visible {
+    @apply outline-none ring-2 ring-blue-500 ring-opacity-50;
+  }
+
+  /* High contrast mode support */
+  @media (prefers-contrast: high) {
+    body {
+      @apply bg-white text-black;
+    }
+  }
+
+  /* Reduced motion support */
+  @media (prefers-reduced-motion: reduce) {
+    * {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
