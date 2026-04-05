@@ -5,7 +5,7 @@ import './globals.css'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'TruthWeaver - Trauma-Informed Platform',
+  title: 'TruthWeave - Trauma-Informed Platform',
   description: 'A secure platform for survivors to document and organize their experiences',
 }
 
@@ -16,7 +16,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body className={`${inter.className} theme-shell`}>
         {children}
       </body>
     </html>

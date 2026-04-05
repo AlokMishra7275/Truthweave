@@ -10,13 +10,132 @@ interface Message {
 }
 
 const TRAUMA_INFORMED_RESPONSES: Record<string, string> = {
-  hello: 'Hello! I am here to support you. How can I help today?',
-  help: 'You can ask me about:\n• using Memory Mosaic\n• keeping your data secure\n• legal preparation\n• safety features\n• crisis resources\n\nPlease tell me what you need.',
-  breathing: 'Try the 4-4-4 breathing exercise:\n\n1. Inhale for 4 counts\n2. Hold for 4 counts\n3. Exhale for 4 counts\n4. Pause for 4 counts\n\nRepeat 5 times and notice how you feel.',
-  safe: 'Your safety is our priority. TruthView offers:\n✓ encrypted storage\n✓ quick exit button\n✓ stealth mode\n✓ full control over your content',
-  crisis: 'If you are in immediate danger, please call your local emergency number.\n\nIn India:\n📞 National Women\'s Helpline: 1800-120-0770\n📞 Crisis Intervention Centre: 1800-2233-330\n\nHelp is available.',
-  memory: 'Memory Mosaic helps you capture memories with:\n\n• Text entries\n• Voice notes\n• Image uploads\n\nTag each memory with mood and intensity, then save it securely.',
-  legal: 'TruthView helps you prepare for legal proceedings by:\n\n✓ organizing your timeline\n✓ securing evidence with hashes\n✓ generating a professional report\n✓ keeping your story safe',
+  start: `I am here to listen whenever you are ready. There is no pressure, no judgment, and no rush.
+
+My role is to help you structure your fragmented memories into a legal-ready testimony—but only in a way that feels safe for you. Trauma fragments our memories. That is not weakness; that is how our minds protect us.
+
+Rather than asking for dates or linear facts immediately, I want to understand your experiences through your senses:
+• What do you see when you close your eyes?
+• What sounds remain with you?
+• What did you feel in your body?
+• What emotions were present?
+
+These sensory details are just as valuable as facts. Often, our bodies remember what our minds cannot yet organize.
+
+To start organizing your thoughts in a safe space, please click on "Begin Your Journey" below.`,
+
+  sensory: `You do not need to remember everything in order. Our minds protect us by fragmenting traumatic memories. This is healing, not failure.
+
+Let me help you gather what you do remember—piece by piece, safely.
+
+Tell me about:
+• A specific moment you remember clearly (even if it is just 10 seconds)
+• What you sensed in that moment
+• How your body felt
+
+There are no wrong answers. Your memories, however fragmented, are valid and important.`,
+
+  timeline: `I will not rush you into a linear timeline. Instead, we will collect your memories as fragments first, like a mosaic.
+
+Once you have shared what feels manageable, we can gently weave these fragments into a coherent structure—one that respects your healing while creating something legally sound.
+
+This process is for you. We move at your pace.`,
+
+  safety: `Your physical and emotional safety comes first, always.
+
+If at any point you need to:
+• Take a break: Click Pause. Return when ready.
+• Exit quickly: Press ESC or click the red Exit button.
+• Switch to stealth mode: Click the eye icon for privacy.
+• Access crisis support: I can provide 24/7 resources.
+
+You have complete control. You are safe here.`,
+
+  breathing: `If you feel triggered or overwhelmed, let us pause and ground you together.
+  
+**4-4-4 Breathing:**
+1. Breathe in slowly for 4 seconds
+2. Hold for 4 seconds  
+3. Exhale slowly for 4 seconds
+4. Rest for 4 seconds
+
+Repeat 5 times. Notice how this grounds you in the present moment.
+
+You are safe right now. Take your time.`,
+
+  crisis: `If you are in immediate danger, your safety is the priority. Please call emergency services:
+
+🇮🇳 **India:** 
+• Police: 100
+• Women's Helpline: 1800-120-0770
+• AASRA (Suicide Prevention): 1800-2233-330
+• iCall: 9152987821
+
+🌍 **International:**
+• RAINN (US): 1-800-656-4673
+• Samaritans (UK): 116-123
+
+You deserve support. Help is available 24/7.`,
+
+  memory: `Memory Mosaic is your private space to collect fragments:
+
+📝 **Text:** Write thoughts as they come
+🎤 **Voice:** Record memories without transcribing
+📸 **Images:** Upload photos with preserved metadata
+🏷️ **Mood Tags:** Track emotional context & intensity
+
+No organization required. Just capture what comes to mind. We will structure it later when it feels safe.`,
+
+  legal: `When you are ready, TruthView will help transform your fragmented memories into a legal narrative.
+
+We will:
+✓ Organize memories with timestamps
+✓ Create a coherent timeline 
+✓ Preserve chain of custody for evidence
+✓ Generate a court-ready PDF brief
+
+But first, we focus on capturing your truth safely. Legal documentation comes after psychological processing.`,
+
+  mosaic: `The Memory Mosaic is your personal healing and documentation space. It represents:
+
+🧩 **Fragmentation is normal** – Trauma doesn't organize linearly
+🌊 **Your narrative emerges** – Patterns appear when fragments connect
+🎨 **You control the structure** – Not forced chronology
+🛡️ **It is encrypted** – Only you see your memories
+
+Start by clicking "Add Memory" and choose what feels easiest to express today.`,
+
+  support: `You are not alone. TruthView connects you to:
+
+🤝 **24/7 Crisis Resources** – Always available
+📚 **Trauma Education** – Understand your responses
+👥 **Survivor Community** – Stories of resilience
+⚖️ **Legal Guidance** – Connect with advocates
+
+Your trauma is not your fault. Your strength in sharing is extraordinary.`,
+
+  ready: `I sense you might be ready to begin. That takes courage.
+
+When you click "Begin Your Journey," you will enter a completely private space. What you create here is yours alone.
+
+Start with whatever feels most manageable:
+• A moment that stands out
+• A sensory detail you remember
+• An emotion from that time
+
+There is no right way to begin. Your truth matters exactly as it is.
+
+Are you ready? Click "Begin Your Journey" below.`,
+
+  default: `I understand. No pressure to share anything right now.
+
+If you need support with:
+• Breathing or grounding → Ask for "breathing"
+• Immediate danger → Ask for "crisis help"
+• Understanding how this works → Ask for "how does this work"
+• Learning about Memory Mosaic → Ask for "memory"
+
+I am here whenever you are ready. Your safety and comfort are my priority.`
 }
 
 export default function Chatbot() {
@@ -24,7 +143,19 @@ export default function Chatbot() {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
-      text: 'Welcome to TruthView support. Ask me anything about safety, privacy, memory organization, or legal preparation.',
+      text: `I am here to listen whenever you are ready. There is no pressure, no judgment, and no rush.
+
+My role is to help you structure your fragmented memories into a legal-ready testimony—but only in a way that feels safe for you. Trauma fragments our memories. That is not weakness; that is how our minds protect us.
+
+Rather than asking for dates or linear facts immediately, I want to understand your experiences through your senses:
+• What do you see when you close your eyes?
+• What sounds remain with you?
+• What did you feel in your body?
+• What emotions were present?
+
+These sensory details are just as valuable as facts. Often, our bodies remember what our minds cannot yet organize.
+
+To start organizing your thoughts in a safe space, please click on "Begin Your Journey" below.`,
       sender: 'bot',
       timestamp: new Date(),
     },

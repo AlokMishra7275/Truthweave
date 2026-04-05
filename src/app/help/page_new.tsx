@@ -108,7 +108,7 @@ export default function HelpCenter() {
   const filteredFAQs = selectedCategory === 'all' ? FAQS : FAQS.filter(faq => faq.category === selectedCategory)
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
+    <main className="min-h-screen bg-gradient-to-br from-emerald-50 via-amber-50 to-rose-50">
       <header className="bg-white shadow-sm sticky top-0 z-10">
         <div className="max-w-6xl mx-auto px-4 py-6 flex justify-between items-center flex-wrap gap-4">
           <Link href="/" className="text-2xl font-bold text-blue-600">TruthView</Link>

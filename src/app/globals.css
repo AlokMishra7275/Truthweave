@@ -2,55 +2,92 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --tw-bg-navy: #0b1220;
+  --tw-bg-charcoal: #111827;
+  --tw-bg-indigo: #1a2242;
+  --tw-fog-a: rgba(95, 114, 173, 0.09);
+  --tw-fog-b: rgba(163, 180, 230, 0.05);
+  --tw-glow: rgba(186, 206, 255, 0.16);
+  --tw-vignette: rgba(3, 6, 17, 0.62);
+}
+
 @layer base {
   body {
-    @apply bg-slate-50 text-slate-800;
+    color: #d5d9e6;
     font-family: 'Inter', 'Arial', sans-serif;
     line-height: 1.6;
+    background: linear-gradient(140deg, var(--tw-bg-navy) 0%, var(--tw-bg-charcoal) 44%, var(--tw-bg-indigo) 100%);
+    background-attachment: fixed;
+    min-height: 100vh;
+    position: relative;
+    overflow-x: hidden;
   }
 
-  /* Stealth Mode Styles - Looks like Online Dictionary */
-  body.stealth-mode {
-    background: #f8f9fa !important;
-    font-family: 'Times New Roman', serif !important;
-    color: #6b7280 !important;
+  /* Soft flowing memory-wave textures with low contrast */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: -2;
+    background:
+      radial-gradient(80rem 46rem at 78% 18%, var(--tw-glow), transparent 60%),
+      radial-gradient(58rem 34rem at 18% 74%, var(--tw-fog-a), transparent 64%),
+      radial-gradient(50rem 30rem at 82% 84%, var(--tw-fog-b), transparent 68%),
+      repeating-radial-gradient(
+        120% 90% at 16% 62%,
+        rgba(182, 195, 232, 0.07) 0 1px,
+        rgba(182, 195, 232, 0) 1px 22px
+      );
+    filter: blur(0.15px);
+    animation: drift-calm 26s ease-in-out infinite alternate;
   }
 
-  body.stealth-mode h1,
-  body.stealth-mode h2,
-  body.stealth-mode h3,
-  body.stealth-mode h4 {
-    font-family: 'Times New Roman', serif !important;
-    color: #374151 !important;
-    font-weight: normal !important;
+  /* Edge vignette for privacy and depth */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: -1;
+    box-shadow: inset 0 0 140px 38px var(--tw-vignette);
   }
 
-  body.stealth-mode .bg-white {
-    background: #ffffff !important;
-    border: 1px solid #e5e7eb !important;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+  .theme-shell {
+    min-height: 100vh;
+    background: transparent;
   }
 
-  body.stealth-mode button {
-    background: #f3f4f6 !important;
-    color: #374151 !important;
-    border: 1px solid #d1d5db !important;
-    font-family: 'Times New Roman', serif !important;
-    border-radius: 4px !important;
+  .theme-surface {
+    background: linear-gradient(180deg, rgba(15, 23, 42, 0.34), rgba(17, 24, 39, 0.26));
   }
 
-  body.stealth-mode button:hover {
-    background: #e5e7eb !important;
+  /* Calm dark surfaces for primary sections without harsh contrast */
+  body .trauma-content {
+    background: linear-gradient(180deg, rgba(17, 24, 39, 0.78), rgba(15, 23, 42, 0.74)) !important;
+    border: 1px solid rgba(148, 163, 184, 0.14);
+    box-shadow: 0 10px 32px rgba(0, 0, 0, 0.24);
   }
 
-  body.stealth-mode a {
-    color: #2563eb !important;
-    text-decoration: underline !important;
+  body .trauma-content h2,
+  body .trauma-content h3,
+  body .trauma-content h4 {
+    color: #e4e8f4 !important;
   }
 
-  /* Hide all trauma-specific content in stealth mode */
-  body.stealth-mode .trauma-content {
-    display: none !important;
+  body .trauma-content p,
+  body .trauma-content span {
+    color: #bac3db !important;
+  }
+
+  @keyframes drift-calm {
+    0% {
+      transform: translate3d(0, 0, 0) scale(1);
+    }
+    100% {
+      transform: translate3d(-0.9%, 0.7%, 0) scale(1.018);
+    }
   }
 
   /* Trauma-informed design principles */
@@ -70,6 +107,20 @@
     @apply shadow-lg transform translate-y-[-2px];
   }
 
+  /* Fragmentation animation - represents healing of fragmented memories */
+  @keyframes pulse-smooth {
+    0%, 100% {
+      opacity: 0.7;
+    }
+    50% {
+      opacity: 1;
+    }
+  }
+
+  .animate-pulse {
+    animation: pulse-smooth 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
   /* Accessibility improvements */
   .focus-visible {
     @apply outline-none ring-2 ring-blue-500 ring-opacity-50;
@@ -79,6 +130,11 @@
   @media (prefers-contrast: high) {
     body {
       @apply bg-white text-black;
+    }
+
+    body::before,
+    body::after {
+      display: none;
     }
   }
 
