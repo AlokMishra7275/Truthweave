@@ -13,6 +13,15 @@ const frontendOrigin = process.env.FRONTEND_ORIGIN || 'http://localhost:3000'
 app.use(cors({ origin: frontendOrigin }))
 app.use(express.json({ limit: '10mb' }))
 
+app.get('/', (_req, res) => {
+  res.json({
+    ok: true,
+    message: 'TruthView backend is running.',
+    frontend: frontendOrigin,
+    health: '/health',
+  })
+})
+
 app.get('/health', (_req, res) => {
   res.json({ ok: true, service: 'truthview-backend' })
 })
