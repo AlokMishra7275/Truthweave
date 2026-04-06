@@ -1,23 +1,22 @@
 {
-  "version": 3,
-  "builds": [
-    {
+  "services": {
+    "frontend": {
       "src": "frontend/package.json",
       "use": "@vercel/next"
     },
-    {
+    "backend": {
       "src": "backend/src/server.ts",
       "use": "@vercel/node"
     }
-  ],
+  },
   "routes": [
     {
       "src": "/api/(.*)",
-      "dest": "/backend/src/server.ts"
+      "dest": "backend"
     },
     {
       "src": "/(.*)",
-      "dest": "/frontend/$1"
+      "dest": "frontend"
     }
   ]
 }
