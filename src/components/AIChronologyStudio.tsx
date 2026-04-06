@@ -525,7 +525,7 @@ export default function AIChronologyStudio() {
           </p>
           <div className="mt-4 rounded-lg border border-emerald-500/30 bg-slate-900/50 p-4 text-sm text-slate-200">
             <p className="font-semibold mb-2">Simple guide (aap kya kar rahi hain):</p>
-            <p>1. Chat lines ya memories add kariye. 2. System unhe sequence me arrange karega. 3. Confidence aur gaps dikhenge. 4. "Save Sequenced Timeline" dabakar arranged data store ho jayega.</p>
+            <p>1. Chat lines ya memories add kariye. 2. System unhe sequence me arrange karega. 3. Confidence aur gaps dikhenge. 4. &quot;Save Sequenced Timeline&quot; dabakar arranged data store ho jayega.</p>
             <p className="mt-2 text-xs text-slate-400">Chat me jo bhi line hogi, wo timeline ka ek event ban sakti hai.</p>
           </div>
           <div className="mt-4 flex flex-wrap gap-3">

@@ -130,7 +130,7 @@ export default function HelpCenter() {
               <p className="text-red-700 mb-3">If you are in immediate danger, call local emergency services or contact a trusted person.</p>
               <div className="space-y-2">
                 <p className="text-red-700 font-medium">Emergency Helplines in India:</p>
-                <p className="text-red-900">National Women\'s Helpline: <strong>1800-120-0770</strong></p>
+                <p className="text-red-900">National Women&apos;s Helpline: <strong>1800-120-0770</strong></p>
                 <p className="text-red-900">Crisis Intervention Centre: <strong>1800-2233-330</strong></p>
               </div>
             </div>

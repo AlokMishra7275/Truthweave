@@ -207,7 +207,7 @@ Generated on: ${new Date().toLocaleString()}
             <div className="text-center py-12 bg-slate-900/40 border border-slate-700 rounded-lg">
               <div className="text-6xl mb-4">📋</div>
               <h3 className="text-xl font-medium text-slate-100 mb-2">No Evidence Yet</h3>
-              <p className="text-slate-400">When incidents are reported, they'll appear here as sealed evidence.</p>
+              <p className="text-slate-400">When incidents are reported, they&apos;ll appear here as sealed evidence.</p>
             </div>
           ) : (
             evidenceRecords.map((record) => (
