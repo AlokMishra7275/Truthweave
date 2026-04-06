@@ -6,7 +6,11 @@
       "dom",
       "dom.iterable"
     ],
+<<<<<<< HEAD
     "jsx": "react-jsx",
+=======
+    "jsx": "preserve",
+>>>>>>> b28efdd55c846a635cb28b5c7b44e6b7c60cbea1
     "module": "ESNext",
     "moduleResolution": "bundler",
     "allowJs": true,
@@ -23,9 +27,13 @@
     "sourceMap": true,
     "baseUrl": ".",
     "paths": {
+<<<<<<< HEAD
       "@/*": [
         "./src/*"
       ]
+=======
+      "@/*": ["./src/*"]
+>>>>>>> b28efdd55c846a635cb28b5c7b44e6b7c60cbea1
     },
     "plugins": [
       {
@@ -38,10 +46,18 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts/**/*.ts",
+<<<<<<< HEAD
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts"
+=======
+    ".next/types/**/*.ts"
+>>>>>>> b28efdd55c846a635cb28b5c7b44e6b7c60cbea1
   ],
   "exclude": [
     "node_modules"
   ]
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> b28efdd55c846a635cb28b5c7b44e6b7c60cbea1

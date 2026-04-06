@@ -4,12 +4,20 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+<<<<<<< HEAD
     "build": "next build",
+=======
+    "build": "next build --no-lint",
+>>>>>>> b28efdd55c846a635cb28b5c7b44e6b7c60cbea1
     "start": "next start",
     "lint": "next lint"
   },
   "dependencies": {
+<<<<<<< HEAD
     "next": "^16.2.2",
+=======
+    "next": "14.2.3",
+>>>>>>> b28efdd55c846a635cb28b5c7b44e6b7c60cbea1
     "react": "^18",
     "react-dom": "^18"
   },
