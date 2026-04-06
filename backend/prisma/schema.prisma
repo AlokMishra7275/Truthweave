@@ -1,0 +1,36 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"  // Change to "postgresql" if using PostgreSQL
+  url      = env("DATABASE_URL")
+}
+
+model LegalEvidence {
+  id                String   @id @default(cuid())
+  fileName          String
+  fileHash          String   // SHA-256 hash of the file
+  fileSize          Int
+  mimeType          String
+  uploadTimestamp   DateTime @default(now())
+  integrityVerified Boolean  @default(false)
+
+  // Original metadata from device/file
+  originalMetadata  String?  // GPS coordinates, device info, creation date, etc. (JSON string)
+
+  // Digital signature for court admissibility
+  digitalSignature  String?  // Base64 encoded signature
+
+  // User association (in a real app, this would link to authenticated users)
+  userId            String?
+
+  // Audit trail
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@map("legal_evidence")
+}
