@@ -17,6 +17,10 @@ export interface EvidenceRecord {
   fileHash: string
   uploadTimestamp: Date
   digitalSignature?: string
+  mimeType?: string
+  fileSize?: number
+  collector?: string
+  notes?: string
 }
 
 export interface LegalBriefData {
@@ -185,6 +189,18 @@ TruthView Platform
       doc.fontSize(9)
       doc.text(`SHA-256 Hash: ${evidence.fileHash}`)
       doc.text(`Upload Timestamp: ${evidence.uploadTimestamp.toLocaleString()}`)
+      if (evidence.mimeType) {
+        doc.text(`MIME Type: ${evidence.mimeType}`)
+      }
+      if (typeof evidence.fileSize === 'number') {
+        doc.text(`File Size: ${(evidence.fileSize / 1024).toFixed(2)} KB`)
+      }
+      if (evidence.collector) {
+        doc.text(`Collector: ${evidence.collector}`)
+      }
+      if (evidence.notes) {
+        doc.text(`Context Note: ${evidence.notes}`)
+      }
       if (evidence.digitalSignature) {
         doc.text(`Digital Signature: ${evidence.digitalSignature.substring(0, 50)}...`)
       }

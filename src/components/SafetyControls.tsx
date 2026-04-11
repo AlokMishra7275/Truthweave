@@ -1,16 +1,12 @@
 'use client'
 
 import { useEffect } from 'react'
+import { runQuickExit } from '@/lib/safety'
 
 export default function SafetyControls() {
   useEffect(() => {
     const handleQuickEscape = () => {
-      // Clear all session storage
-      sessionStorage.clear()
-      localStorage.clear()
-
-      // Redirect to neutral site
-      window.location.href = 'https://www.google.com/search?q=weather'
+      runQuickExit()
     }
 
     const handleKeyDown = (event: KeyboardEvent) => {

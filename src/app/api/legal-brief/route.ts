@@ -16,10 +16,22 @@ export async function POST(request: NextRequest) {
       })
 
       body.evidenceRecords = evidenceRecords.map(record => ({
+        ...(record.originalMetadata ? (() => {
+          try {
+            return JSON.parse(record.originalMetadata) as {
+              collector?: string
+              notes?: string
+            }
+          } catch {
+            return {}
+          }
+        })() : {}),
         fileName: record.fileName,
         fileHash: record.fileHash,
         uploadTimestamp: record.uploadTimestamp,
-        digitalSignature: record.digitalSignature || undefined
+        digitalSignature: record.digitalSignature || undefined,
+        mimeType: record.mimeType,
+        fileSize: record.fileSize,
       }))
     }
 

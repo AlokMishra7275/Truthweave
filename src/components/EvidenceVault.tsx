@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import crypto from 'crypto'
+import { STORAGE_KEYS } from '@/lib/traumaPack'
 
 interface EvidenceRecord {
   id: string
@@ -17,13 +17,38 @@ interface EvidenceRecord {
   legalNotes?: string
 }
 
-const EVIDENCE_VAULT_KEY = 'truthweave_evidence_vault_v1'
+interface ServerEvidenceRecord {
+  id: string
+  fileName: string
+  fileHash: string
+  fileSize: number
+  mimeType: string
+  uploadTimestamp: string
+  integrityVerified: boolean
+}
+
+const EVIDENCE_VAULT_KEY = STORAGE_KEYS.evidenceVault
 
 export default function EvidenceVault() {
   const [evidenceRecords, setEvidenceRecords] = useState<EvidenceRecord[]>([])
+  const [serverEvidenceRecords, setServerEvidenceRecords] = useState<ServerEvidenceRecord[]>([])
   const [selectedEvidence, setSelectedEvidence] = useState<EvidenceRecord | null>(null)
   const [showDetails, setShowDetails] = useState(false)
   const [verifyMessage, setVerifyMessage] = useState('')
+  const [uploading, setUploading] = useState(false)
+  const [uploaderName, setUploaderName] = useState('Survivor')
+  const [uploadNotes, setUploadNotes] = useState('')
+
+  const fetchServerEvidence = async () => {
+    try {
+      const response = await fetch('/api/evidence')
+      if (!response.ok) return
+      const data = (await response.json()) as ServerEvidenceRecord[]
+      setServerEvidenceRecords(Array.isArray(data) ? data : [])
+    } catch {
+      // Keep local-only mode when backend fetch fails.
+    }
+  }
 
   // Load evidence from localStorage
   useEffect(() => {
@@ -52,6 +77,46 @@ export default function EvidenceVault() {
       // Ignore storage errors
     }
   }, [evidenceRecords])
+
+  useEffect(() => {
+    fetchServerEvidence()
+  }, [])
+
+  const uploadEvidenceFile = async (file: File) => {
+    setUploading(true)
+
+    try {
+      const formData = new FormData()
+      formData.append('file', file)
+      formData.append('metadata', JSON.stringify({
+        collector: uploaderName || 'Survivor',
+        notes: uploadNotes,
+        originalLastModified: file.lastModified,
+      }))
+
+      const response = await fetch('/api/evidence', {
+        method: 'POST',
+        body: formData,
+      })
+
+      const payload = await response.json()
+      if (!response.ok) {
+        setVerifyMessage(payload?.error || 'Upload failed. Please try again.')
+        setTimeout(() => setVerifyMessage(''), 3500)
+        return
+      }
+
+      setVerifyMessage('✅ Evidence uploaded with integrity metadata')
+      setUploadNotes('')
+      await fetchServerEvidence()
+      setTimeout(() => setVerifyMessage(''), 3500)
+    } catch {
+      setVerifyMessage('⚠️ Could not upload right now. Local vault still available.')
+      setTimeout(() => setVerifyMessage(''), 3500)
+    } finally {
+      setUploading(false)
+    }
+  }
 
   // Generate cryptographic hash (simplified SHA-256 simulation)
   const generateHash = (data: string): string => {
@@ -199,6 +264,62 @@ Generated on: ${new Date().toLocaleString()}
               {(evidenceRecords.reduce((sum, e) => sum + e.fileSize, 0) / 1024 / 1024).toFixed(1)} MB
             </div>
           </div>
+        </div>
+
+        <div className="mb-8 rounded-lg border border-slate-700 bg-slate-900/60 p-4">
+          <h2 className="text-lg font-semibold text-slate-100 mb-3">Add Evidence File (Chain-of-Custody Lite)</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <input
+              value={uploaderName}
+              onChange={(e) => setUploaderName(e.target.value)}
+              className="px-3 py-2 rounded border border-slate-600 bg-slate-800 text-slate-100"
+              placeholder="Collector / uploader name"
+            />
+            <input
+              value={uploadNotes}
+              onChange={(e) => setUploadNotes(e.target.value)}
+              className="px-3 py-2 rounded border border-slate-600 bg-slate-800 text-slate-100"
+              placeholder="Context note (optional)"
+            />
+            <label className="px-3 py-2 rounded border border-slate-600 bg-slate-800 text-slate-200 cursor-pointer text-center hover:bg-slate-700">
+              {uploading ? 'Uploading...' : 'Select file to upload'}
+              <input
+                type="file"
+                className="hidden"
+                disabled={uploading}
+                onChange={(event) => {
+                  const file = event.target.files?.[0]
+                  if (file) {
+                    uploadEvidenceFile(file)
+                  }
+                  event.currentTarget.value = ''
+                }}
+              />
+            </label>
+          </div>
+          <p className="text-xs text-slate-400 mt-2">Uploaded files are cryptographically hashed and timestamped through the API route.</p>
+        </div>
+
+        <div className="mb-8 rounded-lg border border-slate-700 bg-slate-900/40 p-4">
+          <h2 className="text-lg font-semibold text-slate-100 mb-3">Server Evidence Log</h2>
+          {serverEvidenceRecords.length === 0 ? (
+            <p className="text-sm text-slate-400">No server evidence yet or backend unavailable. Local vault remains active.</p>
+          ) : (
+            <div className="space-y-2">
+              {serverEvidenceRecords.slice(0, 6).map((item) => (
+                <div key={item.id} className="rounded border border-slate-700 bg-slate-800/60 p-3 text-sm">
+                  <div className="flex items-center justify-between gap-3">
+                    <p className="text-slate-100 font-medium truncate">{item.fileName}</p>
+                    <span className={`text-xs px-2 py-1 rounded ${item.integrityVerified ? 'bg-emerald-900/40 text-emerald-200' : 'bg-amber-900/40 text-amber-200'}`}>
+                      {item.integrityVerified ? 'Verified' : 'Pending'}
+                    </span>
+                  </div>
+                  <p className="text-xs text-slate-400 mt-1">{new Date(item.uploadTimestamp).toLocaleString()} • {(item.fileSize / 1024).toFixed(1)} KB</p>
+                  <p className="text-xs text-slate-500 mt-1 break-all">Hash: {item.fileHash}</p>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Evidence List */}

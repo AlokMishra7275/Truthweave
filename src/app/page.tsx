@@ -5,6 +5,8 @@ import Button from '@/components/Button'
 import AuthModal from '@/components/AuthModal'
 import HelpCenterChat from '@/components/HelpCenterChat'
 import { useState } from 'react'
+import { runQuickExit } from '@/lib/safety'
+import { STORAGE_KEYS, loadJSON, saveJSON, type SurvivorMemoryEntry } from '@/lib/traumaPack'
 
 export default function Home() {
   const [showVideoModal, setShowVideoModal] = useState(false)
@@ -12,9 +14,77 @@ export default function Home() {
   const [isHelpOpen, setIsHelpOpen] = useState(false)
   const [isGeneratingBrief, setIsGeneratingBrief] = useState(false)
   const [briefStatus, setBriefStatus] = useState('')
+  const [isGeneratingPacket, setIsGeneratingPacket] = useState(false)
+  const [packetStatus, setPacketStatus] = useState('')
+  const [packetView, setPacketView] = useState<'lawyer' | 'counselor' | 'police'>('lawyer')
   const [authMode, setAuthMode] = useState<'signin' | 'signup'>('signin')
 
   const LEGAL_BRIEF_DRAFT_KEY = 'truthweave_legal_brief_draft_v1'
+
+  const handleGenerateSharePacket = async () => {
+    if (isGeneratingPacket) return
+
+    setIsGeneratingPacket(true)
+    setPacketStatus('Preparing share packet...')
+
+    try {
+      const briefDraft = loadJSON<{ events?: Array<{ order: number; title: string; description: string; approxDate: string; confidence: 'High' | 'Medium' | 'Low'; confidenceScore: number }> }>(
+        'truthweave_chronology_sequence_v1',
+        { events: [] }
+      )
+
+      const memories = loadJSON<SurvivorMemoryEntry[]>(STORAGE_KEYS.sharePacket, [])
+
+      const evidenceResponse = await fetch('/api/evidence')
+      const evidence = evidenceResponse.ok ? await evidenceResponse.json() : []
+
+      const response = await fetch('/api/share-packet', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          packetTitle: 'Institution Share Packet',
+          packetView,
+          survivorAlias: 'Survivor',
+          memories,
+          chronology: briefDraft.events || [],
+          evidence: Array.isArray(evidence)
+            ? evidence.map((item: any) => ({
+                fileName: item.fileName,
+                fileHash: item.fileHash,
+                uploadTimestamp: item.uploadTimestamp,
+                status: item.integrityVerified ? 'verified' : 'recorded',
+              }))
+            : [],
+          supportNotes: [
+            'Entries may include approximate recall windows and this is expected in trauma documentation.',
+            'Use this packet to avoid repeated retelling across institutions.',
+          ],
+        }),
+      })
+
+      const data = await response.json()
+      if (!response.ok) {
+        setPacketStatus(data.error || 'Could not generate share packet.')
+        return
+      }
+
+      saveJSON(STORAGE_KEYS.sharePacket, memories)
+
+      const textBlob = new Blob([data.plainText], { type: 'text/plain;charset=utf-8' })
+      const url = URL.createObjectURL(textBlob)
+      const link = document.createElement('a')
+      link.href = url
+      link.download = `share-packet-${packetView}-${Date.now()}.txt`
+      link.click()
+      URL.revokeObjectURL(url)
+
+      setPacketStatus('Share packet downloaded successfully.')
+    } catch {
+      setPacketStatus('Unexpected error while generating share packet.')
+    } finally {
+      setIsGeneratingPacket(false)
+    }
+  }
 
   const openAuth = (mode: 'signin' | 'signup') => {
     setAuthMode(mode)
@@ -22,9 +92,7 @@ export default function Home() {
   }
 
   const quickExit = () => {
-    sessionStorage.clear()
-    localStorage.clear()
-    window.location.href = 'https://www.google.com/search?q=weather'
+    runQuickExit()
   }
 
   const handleGenerateBrief = async () => {
@@ -309,6 +377,26 @@ export default function Home() {
                     {isGeneratingBrief ? 'Generating...' : 'Generate Brief'}
                   </button>
                   {briefStatus && <p className="mt-3 text-xs text-violet-100">{briefStatus}</p>}
+                  <button
+                    onClick={handleGenerateSharePacket}
+                    disabled={isGeneratingPacket}
+                    className="mt-3 inline-block px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-500 transition-colors text-sm font-medium disabled:opacity-60 disabled:cursor-not-allowed"
+                  >
+                    {isGeneratingPacket ? 'Building Packet...' : 'Download Share Packet'}
+                  </button>
+                  <div className="mt-2">
+                    <label className="text-xs text-indigo-100 mr-2">Packet View:</label>
+                    <select
+                      value={packetView}
+                      onChange={(e) => setPacketView(e.target.value as 'lawyer' | 'counselor' | 'police')}
+                      className="px-2 py-1 rounded bg-slate-900 border border-indigo-300/30 text-xs text-indigo-100"
+                    >
+                      <option value="lawyer">Lawyer</option>
+                      <option value="counselor">Counselor</option>
+                      <option value="police">Police Intake</option>
+                    </select>
+                  </div>
+                  {packetStatus && <p className="mt-2 text-xs text-indigo-100">{packetStatus}</p>}
                 </div>
                 <div className="rounded-xl border border-rose-400/30 bg-rose-900/20 p-6">
                   <h4 className="text-xl font-semibold mb-2">🚨 Safety Controls</h4>

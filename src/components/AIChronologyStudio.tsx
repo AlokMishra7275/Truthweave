@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useMemo, useState } from 'react'
+import { loadJSON, STORAGE_KEYS, type SurvivorMemoryEntry } from '@/lib/traumaPack'
 
 type SourceType = 'text' | 'voice' | 'image' | 'other'
 
@@ -268,6 +269,32 @@ export default function AIChronologyStudio() {
   const [chatMessage, setChatMessage] = useState('')
   const [chatSourceMessage, setChatSourceMessage] = useState('')
 
+  const importMosaicMemories = () => {
+    const memories = loadJSON<SurvivorMemoryEntry[]>(STORAGE_KEYS.sharePacket, [])
+
+    if (!Array.isArray(memories) || memories.length === 0) {
+      setChatSourceMessage('No Memory Mosaic entries found. Add fragments in Memory Mosaic first.')
+      return
+    }
+
+    const converted: Fragment[] = memories.map((memory, index) => ({
+      id: `mosaic-${memory.id}-${index}`,
+      title: memory.title || `Memory ${index + 1}`,
+      description: memory.description,
+      approxDate: '',
+      location: memory.location || '',
+      people: memory.people || '',
+      sourceType: memory.sourceType,
+      certainty: memory.recallConfidence === 'certain' ? 5 : memory.recallConfidence === 'approximate' ? 3 : 2,
+      sequenceIndex: index + 1,
+      origin: 'ai-companion',
+    }))
+
+    setFragments((prev) => mergeUniqueFragments(prev, converted))
+    setIsGenerated(true)
+    setChatSourceMessage(`Memory Mosaic import complete. ${converted.length} fragments merged.`)
+  }
+
   const [newFragment, setNewFragment] = useState<Fragment>({
     id: '',
     title: '',
@@ -373,7 +400,7 @@ export default function AIChronologyStudio() {
 
     orderedFragments.forEach((fragment, index) => {
       if (!fragment.approxDate) {
-        prompts.push(`For "${fragment.title}", can you add an approximate date or time window?`)
+        prompts.push(`For "${fragment.title}", can you add an approximate date or time window? Approximate recall is valid.`)
       }
       if (!fragment.location.trim()) {
         prompts.push(`Where did "${fragment.title}" happen (even approximate location helps)?`)
@@ -546,6 +573,12 @@ export default function AIChronologyStudio() {
               className="px-4 py-2 bg-violet-600 text-white rounded hover:bg-violet-500 transition-colors text-sm font-medium"
             >
               Generate from AI Chat
+            </button>
+            <button
+              onClick={importMosaicMemories}
+              className="px-4 py-2 bg-cyan-600 text-white rounded hover:bg-cyan-500 transition-colors text-sm font-medium"
+            >
+              Import from Memory Mosaic
             </button>
             <button
               onClick={saveSequencedTimeline}

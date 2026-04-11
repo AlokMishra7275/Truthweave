@@ -1,6 +1,8 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
+import Image from 'next/image'
+import { STORAGE_KEYS, saveJSON, toSurvivorMemoryEntry, type RecallConfidence } from '@/lib/traumaPack'
 
 interface MemoryCard {
   id: string
@@ -11,10 +13,15 @@ interface MemoryCard {
   timestamp: Date
   moodTag: string
   intensity: number // 1-5 scale
+  recallConfidence: RecallConfidence
+  timeWindow?: string
+  location?: string
+  people?: string
+  eventType?: string
   triggerWarning?: boolean
 }
 
-const MEMORY_MOSAIC_STORAGE_KEY = 'truthweave_memory_mosaic_cards_v1'
+const MEMORY_MOSAIC_STORAGE_KEY = STORAGE_KEYS.memoryMosaic
 
 const MOODS = [
   { emoji: '😊', label: 'Calm', color: 'bg-emerald-900/40 text-emerald-200' },
@@ -25,6 +32,8 @@ const MOODS = [
   { emoji: '😰', label: 'Scared', color: 'bg-violet-900/40 text-violet-200' }
 ]
 
+const EVENT_TYPES = ['Incident', 'Threat', 'Injury', 'Witness', 'Aftermath', 'Support', 'General']
+
 export default function MemoryMosaic() {
   const [cards, setCards] = useState<MemoryCard[]>([])
   const [showAddForm, setShowAddForm] = useState(false)
@@ -34,6 +43,11 @@ export default function MemoryMosaic() {
   const [newContent, setNewContent] = useState('')
   const [newMoodTag, setNewMoodTag] = useState('Neutral')
   const [newIntensity, setNewIntensity] = useState(3)
+  const [newRecallConfidence, setNewRecallConfidence] = useState<RecallConfidence>('approximate')
+  const [newTimeWindow, setNewTimeWindow] = useState('')
+  const [newLocation, setNewLocation] = useState('')
+  const [newPeople, setNewPeople] = useState('')
+  const [newEventType, setNewEventType] = useState('General')
   const [triggerWarning, setTriggerWarning] = useState(false)
   const [isRecording, setIsRecording] = useState(false)
   const [voicePreviewUrl, setVoicePreviewUrl] = useState('')
@@ -77,6 +91,11 @@ export default function MemoryMosaic() {
     setImagePreviewUrl('')
     setNewMoodTag('Neutral')
     setNewIntensity(3)
+    setNewRecallConfidence('approximate')
+    setNewTimeWindow('')
+    setNewLocation('')
+    setNewPeople('')
+    setNewEventType('General')
     setTriggerWarning(false)
     setIsRecording(false)
     setEditingCardId(null)
@@ -100,6 +119,11 @@ export default function MemoryMosaic() {
     setImagePreviewUrl(card.imageUrl || '')
     setNewMoodTag(card.moodTag)
     setNewIntensity(card.intensity)
+    setNewRecallConfidence(card.recallConfidence || 'approximate')
+    setNewTimeWindow(card.timeWindow || '')
+    setNewLocation(card.location || '')
+    setNewPeople(card.people || '')
+    setNewEventType(card.eventType || 'General')
     setTriggerWarning(Boolean(card.triggerWarning))
     setShowAddForm(true)
   }
@@ -126,6 +150,11 @@ export default function MemoryMosaic() {
       timestamp: new Date(),
       moodTag: newMoodTag,
       intensity: newIntensity,
+      recallConfidence: newRecallConfidence,
+      timeWindow: newTimeWindow,
+      location: newLocation,
+      people: newPeople,
+      eventType: newEventType,
       triggerWarning
     }
 
@@ -166,6 +195,22 @@ export default function MemoryMosaic() {
   useEffect(() => {
     try {
       localStorage.setItem(MEMORY_MOSAIC_STORAGE_KEY, JSON.stringify(cards))
+      const mapped = cards.map((card) => toSurvivorMemoryEntry({
+        id: card.id,
+        title: card.eventType ? `${card.eventType} memory` : 'Memory fragment',
+        description: card.content,
+        sourceType: card.type === 'image' ? 'image' : card.type === 'voice' ? 'voice' : 'text',
+        createdAt: card.timestamp,
+        location: card.location,
+        people: card.people,
+        timeWindow: card.timeWindow,
+        eventType: card.eventType,
+        recallConfidence: card.recallConfidence,
+        emotionalState: card.moodTag,
+        intensity: card.intensity,
+        triggerWarning: card.triggerWarning,
+      }))
+      saveJSON(STORAGE_KEYS.sharePacket, mapped)
     } catch {
       // Ignore storage errors to avoid blocking user flow
     }
@@ -422,9 +467,12 @@ export default function MemoryMosaic() {
                       <p className="text-sm text-slate-300 mt-2">{newContent}</p>
                     )}
                     {imagePreviewUrl && (
-                      <img
+                      <Image
                         src={imagePreviewUrl}
                         alt="Selected memory preview"
+                        width={320}
+                        height={160}
+                        unoptimized
                         className="mt-3 mx-auto max-h-40 rounded-md border border-slate-700"
                       />
                     )}
@@ -451,6 +499,59 @@ export default function MemoryMosaic() {
                     </button>
                   ))}
                 </div>
+              </div>
+
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-slate-200 mb-2">Recall confidence</label>
+                <div className="grid grid-cols-3 gap-2">
+                  {([
+                    { value: 'certain', label: 'Certain' },
+                    { value: 'approximate', label: 'Approximate' },
+                    { value: 'unsure', label: 'Unsure' }
+                  ] as Array<{ value: RecallConfidence; label: string }>).map((item) => (
+                    <button
+                      key={item.value}
+                      onClick={() => setNewRecallConfidence(item.value)}
+                      className={`p-2 rounded-md border text-sm ${
+                        newRecallConfidence === item.value
+                          ? 'border-emerald-500 bg-emerald-900/30 text-emerald-100'
+                          : 'border-slate-700 text-slate-300 hover:border-slate-500'
+                      }`}
+                    >
+                      {item.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
+                <input
+                  value={newTimeWindow}
+                  onChange={(e) => setNewTimeWindow(e.target.value)}
+                  placeholder="Approx time window (e.g., Late night, Week 2 Jan)"
+                  className="w-full px-3 py-2 border border-slate-600 bg-slate-800 text-slate-100 rounded-md"
+                />
+                <input
+                  value={newLocation}
+                  onChange={(e) => setNewLocation(e.target.value)}
+                  placeholder="Approx location"
+                  className="w-full px-3 py-2 border border-slate-600 bg-slate-800 text-slate-100 rounded-md"
+                />
+                <input
+                  value={newPeople}
+                  onChange={(e) => setNewPeople(e.target.value)}
+                  placeholder="People involved"
+                  className="w-full px-3 py-2 border border-slate-600 bg-slate-800 text-slate-100 rounded-md"
+                />
+                <select
+                  value={newEventType}
+                  onChange={(e) => setNewEventType(e.target.value)}
+                  className="w-full px-3 py-2 border border-slate-600 bg-slate-800 text-slate-100 rounded-md"
+                >
+                  {EVENT_TYPES.map((type) => (
+                    <option key={type} value={type}>{type}</option>
+                  ))}
+                </select>
               </div>
 
               {/* Intensity Scale */}
@@ -555,6 +656,9 @@ export default function MemoryMosaic() {
                     <span className={`px-2 py-1 rounded-full text-xs font-medium ${moodInfo.color}`}>
                       {card.moodTag}
                     </span>
+                    <span className="px-2 py-1 rounded-full text-xs font-medium bg-slate-800 text-slate-200 border border-slate-600">
+                      {card.recallConfidence}
+                    </span>
                   </div>
                   <div className="text-right">
                     <div className="text-xs text-slate-500">
@@ -586,9 +690,12 @@ export default function MemoryMosaic() {
                   {card.type === 'image' && (
                     <div className="bg-slate-800 rounded-md border border-slate-700 p-2">
                       {card.imageUrl ? (
-                        <img
+                        <Image
                           src={card.imageUrl}
                           alt={card.content || 'Saved memory image'}
+                          width={600}
+                          height={160}
+                          unoptimized
                           className="w-full h-40 object-cover rounded"
                         />
                       ) : (
@@ -599,6 +706,15 @@ export default function MemoryMosaic() {
                     </div>
                   )}
                 </div>
+
+                {(card.timeWindow || card.location || card.people || card.eventType) && (
+                  <div className="mb-3 rounded-md border border-slate-700 bg-slate-800/60 p-2 text-xs text-slate-300">
+                    <p>Type: {card.eventType || 'General'}</p>
+                    {card.timeWindow && <p>When: {card.timeWindow}</p>}
+                    {card.location && <p>Where: {card.location}</p>}
+                    {card.people && <p>Who: {card.people}</p>}
+                  </div>
+                )}
 
                 {/* Actions */}
                 <div className="flex justify-between items-center pt-2 border-t border-slate-700">
