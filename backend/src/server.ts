@@ -8,9 +8,31 @@ import legalBriefRouter from './routes/legalBrief'
 
 const app = express()
 const port = Number(process.env.PORT || 4000)
-const frontendOrigin = process.env.FRONTEND_ORIGIN || 'http://localhost:3000'
+const frontendOrigin = process.env.FRONTEND_ORIGIN || '*'
 
-app.use(cors({ origin: frontendOrigin }))
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      // Allow requests with no origin (like mobile apps, curl, or server-to-server)
+      if (!origin) return callback(null, true)
+      
+      // If frontendOrigin is wildcard, allow everything
+      if (frontendOrigin === '*' || !process.env.FRONTEND_ORIGIN) return callback(null, true)
+      
+      // Allow localhost or Vercel preview/production domains
+      if (
+        origin.endsWith('.vercel.app') ||
+        origin.includes('localhost') ||
+        origin === frontendOrigin
+      ) {
+        return callback(null, true)
+      }
+
+      return callback(null, true)
+    },
+    credentials: true,
+  })
+)
 app.use(express.json({ limit: '10mb' }))
 
 app.get('/', (_req, res) => {
@@ -23,6 +45,10 @@ app.get('/', (_req, res) => {
 })
 
 app.get('/health', (_req, res) => {
+  res.json({ ok: true, service: 'truthview-backend' })
+})
+
+app.get('/api/health', (_req, res) => {
   res.json({ ok: true, service: 'truthview-backend' })
 })
 
