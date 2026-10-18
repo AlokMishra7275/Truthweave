@@ -113,10 +113,26 @@ router.post('/send-otp', async (req, res) => {
         return res.status(400).json({ error: 'Invalid email address.' })
       }
 
-      await sendEmailOtp(normalizedEmail, otp)
-      setOtp('email', normalizedEmail, otp)
-
-      return res.json({ success: true, message: 'OTP sent to your email.' })
+      try {
+        await sendEmailOtp(normalizedEmail, otp)
+        setOtp('email', normalizedEmail, otp)
+        return res.json({ success: true, message: 'OTP sent to your email.' })
+      } catch (emailError) {
+        if (process.env.NODE_ENV !== 'production') {
+          console.log(`\n======================================================`)
+          console.log(`🔑 [DEV MODE] Email OTP Delivery Fallback`)
+          console.log(`📧 Target Email: ${normalizedEmail}`)
+          console.log(`🔐 OTP Code: ${otp}`)
+          console.log(`======================================================\n`)
+          setOtp('email', normalizedEmail, otp)
+          return res.json({
+            success: true,
+            message: `[DEV MODE] OTP generated: ${otp} (Check backend console)`,
+            devOtp: otp,
+          })
+        }
+        throw emailError
+      }
     }
 
     if (!body.phone || !body.countryCode) {
@@ -129,10 +145,26 @@ router.post('/send-otp', async (req, res) => {
       return res.status(400).json({ error: 'Invalid mobile number.' })
     }
 
-    await sendSmsOtp(normalizedPhone, otp)
-    setOtp('mobile', normalizedPhone, otp)
-
-    return res.json({ success: true, message: 'OTP sent to your mobile number.' })
+    try {
+      await sendSmsOtp(normalizedPhone, otp)
+      setOtp('mobile', normalizedPhone, otp)
+      return res.json({ success: true, message: 'OTP sent to your mobile number.' })
+    } catch (smsError) {
+      if (process.env.NODE_ENV !== 'production') {
+        console.log(`\n======================================================`)
+        console.log(`🔑 [DEV MODE] SMS OTP Delivery Fallback (Twilio bypass)`)
+        console.log(`📱 Mobile: ${normalizedPhone}`)
+        console.log(`🔐 OTP Code: ${otp}`)
+        console.log(`======================================================\n`)
+        setOtp('mobile', normalizedPhone, otp)
+        return res.json({
+          success: true,
+          message: `[DEV MODE] OTP generated: ${otp} (Check backend console)`,
+          devOtp: otp,
+        })
+      }
+      throw smsError
+    }
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Failed to send OTP.'
     return res.status(500).json({ error: message })

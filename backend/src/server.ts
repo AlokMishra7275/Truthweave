@@ -31,18 +31,11 @@ app.use('/api/chronology', chronologyRouter)
 app.use('/api/evidence', evidenceRouter)
 app.use('/api/legal-brief', legalBriefRouter)
 
-<<<<<<< HEAD
-// Export the Express app for Vercel serverless deployment.
-// The app.listen call is kept only for local/dev execution.
-if (require.main === module) {
+if (!process.env.VERCEL) {
   app.listen(port, () => {
     console.log(`TruthView backend running on http://localhost:${port}`)
   })
 }
 
 export default app
-=======
-app.listen(port, () => {
-  console.log(`TruthView backend running on http://localhost:${port}`)
-})
->>>>>>> b28efdd55c846a635cb28b5c7b44e6b7c60cbea1
+
