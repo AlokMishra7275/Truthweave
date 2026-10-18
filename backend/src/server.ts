@@ -13,26 +13,15 @@ const frontendOrigin = process.env.FRONTEND_ORIGIN || '*'
 app.use(
   cors({
     origin: (origin, callback) => {
-      // Allow requests with no origin (like mobile apps, curl, or server-to-server)
-      if (!origin) return callback(null, true)
-      
-      // If frontendOrigin is wildcard, allow everything
-      if (frontendOrigin === '*' || !process.env.FRONTEND_ORIGIN) return callback(null, true)
-      
-      // Allow localhost or Vercel preview/production domains
-      if (
-        origin.endsWith('.vercel.app') ||
-        origin.includes('localhost') ||
-        origin === frontendOrigin
-      ) {
-        return callback(null, true)
-      }
-
-      return callback(null, true)
+      // Reflect incoming origin dynamically for safe cross-origin requests
+      callback(null, true)
     },
     credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'Origin', 'Accept', 'X-Requested-With'],
   })
 )
+app.options('*', cors())
 app.use(express.json({ limit: '10mb' }))
 
 app.get('/', (_req, res) => {
