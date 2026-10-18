@@ -268,11 +268,14 @@ To start organizing your thoughts in a safe space, please click on "Begin Your J
               </div>
               <div className="p-4 border-t border-slate-200 flex gap-2">
                 <input
+                  id="chatbot-modal-input"
+                  name="modalQuery"
                   type="text"
                   value={input}
                   onChange={e => setInput(e.target.value)}
                   onKeyDown={e => e.key === 'Enter' && handleSend()}
                   placeholder="Type your question..."
+                  aria-label="Type your question"
                   className="flex-1 px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
                 <button
@@ -315,11 +318,14 @@ To start organizing your thoughts in a safe space, please click on "Begin Your J
           <div className="p-3 border-t border-slate-200 bg-white">
             <div className="flex gap-2 mb-2">
               <input
+                id="chatbot-inline-input"
+                name="inlineQuery"
                 type="text"
                 value={input}
                 onChange={e => setInput(e.target.value)}
                 onKeyDown={e => e.key === 'Enter' && handleSend()}
                 placeholder="Ask me anything..."
+                aria-label="Ask me anything"
                 className="flex-1 px-3 py-2 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
               <button

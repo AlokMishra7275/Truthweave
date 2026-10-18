@@ -366,11 +366,14 @@ export default function HelpCenter() {
           <div className="px-5 py-4 border-t border-slate-700 bg-slate-900/80">
             <div className="flex gap-2 mb-3">
               <input
+                id="help-assistant-input"
+                name="chatMessage"
                 type="text"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleSend()}
                 placeholder="Message TruthWeave Assistant..."
+                aria-label="Message TruthWeave Assistant"
                 className="flex-1 px-4 py-3 rounded-xl border border-slate-600 bg-slate-800 text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
               <button

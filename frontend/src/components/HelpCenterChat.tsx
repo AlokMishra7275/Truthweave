@@ -754,11 +754,14 @@ function HelpCenterChatModal({ onClose }: { onClose?: () => void }) {
 
       <div className="flex gap-2">
         <input
+          id="help-center-response-input"
+          name="chatResponse"
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && handleSend()}
           placeholder={isPaused ? 'Conversation is paused. Click Continue when ready.' : 'Type your response...'}
+          aria-label="Type your response"
           className="flex-1 px-4 py-3 rounded-lg border border-slate-600 bg-slate-800 text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
           disabled={isComplete}
         />

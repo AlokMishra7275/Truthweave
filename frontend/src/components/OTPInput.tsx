@@ -48,6 +48,8 @@ export default function OTPInput({ value, onChange, length = 6 }: OTPInputProps)
       {Array.from({ length }).map((_, index) => (
         <input
           key={index}
+          id={`otp-digit-${index + 1}`}
+          name={`otpDigit${index + 1}`}
           ref={(el) => {
             refs.current[index] = el
           }}
@@ -59,6 +61,7 @@ export default function OTPInput({ value, onChange, length = 6 }: OTPInputProps)
           maxLength={1}
           className="h-11 w-10 sm:h-12 sm:w-11 rounded-lg border border-slate-500/60 bg-slate-900/70 text-center text-lg text-slate-100 outline-none focus:border-blue-400/70"
           aria-label={`OTP digit ${index + 1}`}
+          title={`OTP digit ${index + 1}`}
         />
       ))}
     </div>

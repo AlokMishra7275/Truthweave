@@ -347,12 +347,15 @@ export default function MemoryMosaic() {
 
               {/* Content Input */}
               <div className="mb-4">
-                <label className="block text-sm font-medium text-slate-200 mb-2">Content</label>
+                <label htmlFor="mosaic-content" className="block text-sm font-medium text-slate-200 mb-2">Content</label>
                 {newCardType === 'text' && (
                   <textarea
+                    id="mosaic-content"
+                    name="content"
                     value={newContent}
                     onChange={(e) => setNewContent(e.target.value)}
                     placeholder="Write your memory here... Take your time."
+                    aria-label="Memory content"
                     rows={4}
                     className="w-full px-3 py-2 border border-slate-600 bg-slate-800 text-slate-100 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
@@ -455,15 +458,18 @@ export default function MemoryMosaic() {
 
               {/* Intensity Scale */}
               <div className="mb-4">
-                <label className="block text-sm font-medium text-slate-200 mb-2">
+                <label htmlFor="mosaic-intensity" className="block text-sm font-medium text-slate-200 mb-2">
                   Intensity: {newIntensity}/5
                 </label>
                 <input
+                  id="mosaic-intensity"
+                  name="intensity"
                   type="range"
                   min="1"
                   max="5"
                   value={newIntensity}
                   onChange={(e) => setNewIntensity(Number(e.target.value))}
+                  aria-label="Intensity rating from 1 to 5"
                   className="w-full"
                 />
                 <div className="flex justify-between text-xs text-slate-400 mt-1">
@@ -475,8 +481,10 @@ export default function MemoryMosaic() {
 
               {/* Trigger Warning */}
               <div className="mb-6">
-                <label className="flex items-center">
+                <label htmlFor="mosaic-trigger-warning" className="flex items-center cursor-pointer">
                   <input
+                    id="mosaic-trigger-warning"
+                    name="triggerWarning"
                     type="checkbox"
                     checked={triggerWarning}
                     onChange={(e) => setTriggerWarning(e.target.checked)}

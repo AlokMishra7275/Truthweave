@@ -221,22 +221,28 @@ export default function AuthModal({ isOpen, mode, onClose }: AuthModalProps) {
             <>
               {method === 'email' ? (
                 <div>
-                  <label className="mb-1 block text-sm text-slate-300">Email</label>
+                  <label htmlFor="auth-email-input" className="mb-1 block text-sm text-slate-300">Email</label>
                   <input
+                    id="auth-email-input"
+                    name="email"
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="you@example.com"
+                    aria-label="Email Address"
                     className="w-full rounded-xl border border-slate-500/60 bg-slate-900/70 px-4 py-2.5 text-slate-100 outline-none focus:border-blue-400/60"
                   />
                 </div>
               ) : (
                 <div>
-                  <label className="mb-1 block text-sm text-slate-300">Mobile Number</label>
+                  <label htmlFor="auth-phone-input" className="mb-1 block text-sm text-slate-300">Mobile Number</label>
                   <div className="flex gap-2">
                     <select
+                      id="auth-country-code"
+                      name="countryCode"
                       value={countryCode}
                       onChange={(e) => setCountryCode(e.target.value)}
+                      aria-label="Country Code"
                       className="rounded-xl border border-slate-500/60 bg-slate-900/70 px-3 py-2.5 text-slate-100 outline-none"
                     >
                       {COUNTRY_CODES.map((code) => (
@@ -246,10 +252,13 @@ export default function AuthModal({ isOpen, mode, onClose }: AuthModalProps) {
                       ))}
                     </select>
                     <input
+                      id="auth-phone-input"
+                      name="phone"
                       type="tel"
                       value={phone}
                       onChange={(e) => setPhone(e.target.value.replace(/\D/g, ''))}
                       placeholder="Enter mobile number"
+                      aria-label="Mobile Number"
                       className="w-full rounded-xl border border-slate-500/60 bg-slate-900/70 px-4 py-2.5 text-slate-100 outline-none focus:border-blue-400/60"
                     />
                   </div>

@@ -566,32 +566,47 @@ export default function AIChronologyStudio() {
           <h2 className="text-xl font-semibold text-slate-100 mb-4">Add Fragment</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <input
+              id="fragment-title"
+              name="title"
               value={newFragment.title}
               onChange={(e) => setNewFragment((prev) => ({ ...prev, title: e.target.value }))}
               placeholder="Event title"
+              aria-label="Event title"
               className="px-3 py-2 rounded-md border border-slate-600 bg-slate-800 text-slate-100"
             />
             <input
+              id="fragment-date"
+              name="approxDate"
               type="datetime-local"
               value={newFragment.approxDate}
               onChange={(e) => setNewFragment((prev) => ({ ...prev, approxDate: e.target.value }))}
+              aria-label="Approximate Date"
               className="px-3 py-2 rounded-md border border-slate-600 bg-slate-800 text-slate-100"
             />
             <input
+              id="fragment-location"
+              name="location"
               value={newFragment.location}
               onChange={(e) => setNewFragment((prev) => ({ ...prev, location: e.target.value }))}
               placeholder="Approx location"
+              aria-label="Approximate location"
               className="px-3 py-2 rounded-md border border-slate-600 bg-slate-800 text-slate-100"
             />
             <input
+              id="fragment-people"
+              name="people"
               value={newFragment.people}
               onChange={(e) => setNewFragment((prev) => ({ ...prev, people: e.target.value }))}
               placeholder="People involved"
+              aria-label="People involved"
               className="px-3 py-2 rounded-md border border-slate-600 bg-slate-800 text-slate-100"
             />
             <select
+              id="fragment-source-type"
+              name="sourceType"
               value={newFragment.sourceType}
               onChange={(e) => setNewFragment((prev) => ({ ...prev, sourceType: e.target.value as SourceType }))}
+              aria-label="Source Type"
               className="px-3 py-2 rounded-md border border-slate-600 bg-slate-800 text-slate-100"
             >
               <option value="text">Text</option>
@@ -600,21 +615,27 @@ export default function AIChronologyStudio() {
               <option value="other">Other</option>
             </select>
             <div>
-              <label className="text-xs text-slate-400">Certainty: {newFragment.certainty}/5</label>
+              <label htmlFor="fragment-certainty" className="text-xs text-slate-400">Certainty: {newFragment.certainty}/5</label>
               <input
+                id="fragment-certainty"
+                name="certainty"
                 type="range"
                 min="1"
                 max="5"
                 value={newFragment.certainty}
                 onChange={(e) => setNewFragment((prev) => ({ ...prev, certainty: Number(e.target.value) }))}
+                aria-label="Certainty rating from 1 to 5"
                 className="w-full"
               />
             </div>
           </div>
           <textarea
+            id="fragment-description"
+            name="description"
             value={newFragment.description}
             onChange={(e) => setNewFragment((prev) => ({ ...prev, description: e.target.value }))}
             placeholder="Describe what happened"
+            aria-label="Describe what happened"
             rows={3}
             className="mt-4 w-full px-3 py-2 rounded-md border border-slate-600 bg-slate-800 text-slate-100"
           />

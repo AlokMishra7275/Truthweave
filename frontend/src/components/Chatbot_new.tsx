@@ -233,11 +233,14 @@ To start organizing your thoughts in a safe space, please click on "Begin Your J
 
           <div className="p-4 border-t border-slate-200 flex gap-2">
             <input
+              id="chatbot-new-input"
+              name="chatQuery"
               type="text"
               value={input}
               onChange={e => setInput(e.target.value)}
               onKeyPress={e => e.key === 'Enter' && handleSend()}
               placeholder="Type your question..."
+              aria-label="Type your question"
               className="flex-1 px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             <button onClick={handleSend} className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">Send</button>
